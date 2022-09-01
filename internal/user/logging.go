@@ -93,9 +93,10 @@ func (s serviceLoggingMiddleware) DeleteById(ctx context.Context, request Delete
 	return resp, err
 }
 
-func (s serviceLoggingMiddleware) GetMany(ctx context.Context) (GetUsersManyResponse, error) {
+func (s serviceLoggingMiddleware) GetMany(ctx context.Context, request GetUsersManyRequest) (GetUsersManyResponse, error) {
 	s.logger.WithFields(logrus.Fields{
 		"endpoint": "GetMany",
+		"request":  request,
 	}).Debug("received request")
 	var resp GetUsersManyResponse
 	var err error
@@ -111,6 +112,6 @@ func (s serviceLoggingMiddleware) GetMany(ctx context.Context) (GetUsersManyResp
 
 		logger.WithField("response", resp).Debug()
 	}(time.Now())
-	resp, err = s.next.GetMany(ctx)
+	resp, err = s.next.GetMany(ctx, request)
 	return resp, err
 }

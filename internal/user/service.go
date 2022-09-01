@@ -4,11 +4,17 @@ import (
 	"context"
 )
 
+type GetManyParameters struct {
+	Page    int
+	PerPage int
+	Filter  Entity
+}
+
 type Repository interface {
 	Create(ctx context.Context, entity Entity) (Entity, error)
 	Update(ctx context.Context, entity Entity) (Entity, error)
 	DeleteById(ctx context.Context, id string) error
-	GetMany(ctx context.Context) ([]Entity, error)
+	GetMany(ctx context.Context, parameters GetManyParameters) ([]Entity, error)
 }
 
 type service struct {
@@ -103,10 +109,26 @@ func (s *service) DeleteById(ctx context.Context, request DeleteUserByIdRequest)
 	}, nil
 }
 
-func (s *service) GetMany(ctx context.Context) (GetUsersManyResponse, error) {
-	entities, err := s.repo.GetMany(ctx)
+func (s *service) GetMany(ctx context.Context, request GetUsersManyRequest) (GetUsersManyResponse, error) {
+	params := GetManyParameters{
+		Page:    request.Page,
+		PerPage: request.PerPage,
+		Filter: Entity{
+			Id:        request.Filter.Id,
+			FirstName: request.Filter.FirstName,
+			LastName:  request.Filter.LastName,
+			Nickname:  request.Filter.Nickname,
+			Password:  request.Filter.Password,
+			Email:     request.Filter.Email,
+			Country:   request.Filter.Country,
+			CreatedAt: request.Filter.CreatedAt,
+			UpdatedAt: request.Filter.UpdatedAt,
+		},
+	}
+
+	entities, err := s.repo.GetMany(ctx, params)
 	if err != nil {
-		return GetUsersManyResponse{}, err
+		return GetUsersManyResponse{}, repositoryError(err)
 	}
 
 	users := make([]User, len(entities))

@@ -2,8 +2,11 @@ package user
 
 import (
 	"context"
+	"fmt"
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
+	"reflect"
+	"strings"
 )
 
 const insertUserQuery = `INSERT INTO users(first_name, last_name, nickname, password, email, country) 
@@ -14,7 +17,8 @@ const updateUserQuery = `UPDATE users SET first_name=:first_name, last_name=:las
 						where id=:id
 						RETURNING created_at, updated_at;`
 const deleteUserByIdQuery = `DELETE FROM users WHERE id=:id;`
-const selectUsersQuery = `SELECT * FROM users;`
+const selectUsersQuery = `SELECT id, first_name, last_name, nickname, 
+							password, email, country, created_at, updated_at FROM users WHERE 1 = 1`
 
 type repository struct {
 	db *sqlx.DB
@@ -74,12 +78,67 @@ func (r *repository) DeleteById(ctx context.Context, id string) error {
 	return err
 }
 
-func (r *repository) GetMany(ctx context.Context) ([]Entity, error) {
+func (r *repository) GetMany(ctx context.Context, parameters GetManyParameters) ([]Entity, error) {
 	var entities []Entity
-	err := r.db.Select(&entities, selectUsersQuery)
+
+	query := r.createGetManyQuery(parameters, selectUsersQuery)
+	stmt, err := r.db.PrepareNamedContext(ctx, query)
 	if err != nil {
-		return nil, err
+		return entities, err
+	}
+
+	rows, err := stmt.QueryxContext(ctx, parameters.Filter)
+	if err != nil {
+		return entities, err
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var entity Entity
+		err = rows.StructScan(&entity)
+		if err != nil {
+			return entities, err
+		}
+
+		entities = append(entities, entity)
 	}
 
 	return entities, nil
+}
+
+func (r *repository) createGetManyQuery(parameters GetManyParameters, query string) string {
+	queryBuilder := strings.Builder{}
+	queryBuilder.WriteString(query)
+
+	filterQuery := r.createFilterQuery(parameters.Filter)
+	paginationQuery := r.createPaginationQuery(parameters.Page, parameters.PerPage)
+
+	queryBuilder.WriteString(filterQuery)
+	queryBuilder.WriteString(" ORDER BY created_at ASC")
+	queryBuilder.WriteString(paginationQuery)
+
+	return queryBuilder.String()
+}
+
+func (r *repository) createFilterQuery(filter Entity) string {
+	filterQuery := strings.Builder{}
+
+	t := reflect.TypeOf(&filter).Elem()
+	v := reflect.ValueOf(filter)
+	for i := 0; i < v.NumField(); i++ {
+		field := v.Field(i)
+		if !field.IsZero() {
+			typeField := t.Field(i)
+			fieldColumnName := typeField.Tag.Get("db")
+			filterQuery.WriteString(fmt.Sprintf(" AND %[1]s=:%[1]s", fieldColumnName))
+		}
+	}
+
+	return filterQuery.String()
+}
+
+func (r *repository) createPaginationQuery(page int, perPage int) string {
+	offset := perPage * (page - 1)
+	limit := perPage
+	return fmt.Sprintf(" LIMIT %d OFFSET %d;", limit, offset)
 }

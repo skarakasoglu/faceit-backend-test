@@ -2,20 +2,27 @@ package user
 
 import (
 	"context"
+	"encoding/json"
 	"faceit-backend-test/internal/apierr"
 	"faceit-backend-test/internal/router"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"net/url"
+	"strconv"
 )
 
+const (
+	defaultPage    = 1
+	defaultPerPage = 10
+)
 const route = "/users"
 
 type Service interface {
 	Create(ctx context.Context, request CreateUserRequest) (CreateUserResponse, error)
 	Update(ctx context.Context, request UpdateUserRequest) (UpdateUserResponse, error)
 	DeleteById(ctx context.Context, request DeleteUserByIdRequest) (DeleteUserResponse, error)
-	GetMany(ctx context.Context) (GetUsersManyResponse, error)
+	GetMany(ctx context.Context, request GetUsersManyRequest) (GetUsersManyResponse, error)
 }
 
 type controller struct {
@@ -69,7 +76,7 @@ func (c *controller) updateUser(ctx *gin.Context) {
 	var req UpdateUserRequest
 	err := ctx.ShouldBindJSON(&req)
 	if err != nil {
-		c.decodeError(ctx, err)
+		c.decodeError(ctx, apierr.BadRequest(err.Error()))
 		return
 	}
 
@@ -87,7 +94,7 @@ func (c *controller) deleteUserById(ctx *gin.Context) {
 	var req DeleteUserByIdRequest
 	err := ctx.ShouldBindUri(&req)
 	if err != nil {
-		c.decodeError(ctx, err)
+		c.decodeError(ctx, apierr.BadRequest(err.Error()))
 		return
 	}
 
@@ -101,7 +108,42 @@ func (c *controller) deleteUserById(ctx *gin.Context) {
 }
 
 func (c *controller) getUsersMany(ctx *gin.Context) {
-	resp, err := c.service.GetMany(ctx)
+	var req GetUsersManyRequest
+	var err error
+	req.Page = defaultPage
+	req.PerPage = defaultPerPage
+
+	if page := ctx.Query("page"); page != "" {
+		req.Page, err = strconv.Atoi(page)
+		if err != nil {
+			c.decodeError(ctx, apierr.BadRequest(err.Error()))
+			return
+		}
+	}
+
+	if perPage := ctx.Query("perPage"); perPage != "" {
+		req.PerPage, err = strconv.Atoi(perPage)
+		if err != nil {
+			c.decodeError(ctx, apierr.BadRequest(err.Error()))
+			return
+		}
+	}
+
+	if filter := ctx.Query("filter"); filter != "" {
+		decodedFilter, err := url.QueryUnescape(filter)
+		if err != nil {
+			c.decodeError(ctx, apierr.BadRequest(err.Error()))
+			return
+		}
+
+		err = json.Unmarshal([]byte(decodedFilter), &req.Filter)
+		if err != nil {
+			c.decodeError(ctx, apierr.BadRequest(err.Error()))
+			return
+		}
+	}
+
+	resp, err := c.service.GetMany(ctx, req)
 	if err != nil {
 		c.decodeError(ctx, err)
 		return

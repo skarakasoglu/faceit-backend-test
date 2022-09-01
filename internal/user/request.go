@@ -22,3 +22,9 @@ type UpdateUserRequest struct {
 type DeleteUserByIdRequest struct {
 	Id string `uri:"id" binding:"required,uuid"`
 }
+
+type GetUsersManyRequest struct {
+	Page    int  `uri:"page"`
+	PerPage int  `uri:"perPage"`
+	Filter  User `uri:"filter"`
+}
