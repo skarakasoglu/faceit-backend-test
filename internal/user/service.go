@@ -2,7 +2,10 @@ package user
 
 import (
 	"context"
+	"faceit-backend-test/internal/pubsub"
 )
+
+const UserChangeTopic = "user.update"
 
 type GetManyParameters struct {
 	Page    int
@@ -18,7 +21,8 @@ type Repository interface {
 }
 
 type service struct {
-	repo Repository
+	repo   Repository
+	broker *pubsub.Broker
 }
 
 var _ Service = (*service)(nil)
@@ -38,6 +42,12 @@ func NewService(opts ...ServiceOpts) Service {
 func WithRepository(repo Repository) ServiceOpts {
 	return func(s *service) {
 		s.repo = repo
+	}
+}
+
+func WithBroker(broker *pubsub.Broker) ServiceOpts {
+	return func(s *service) {
+		s.broker = broker
 	}
 }
 
@@ -82,19 +92,21 @@ func (s *service) Update(ctx context.Context, request UpdateUserRequest) (Update
 	if err != nil {
 		return UpdateUserResponse{}, repositoryError(err)
 	}
+	updatedUser := User{
+		Id:        entity.Id,
+		FirstName: entity.FirstName,
+		LastName:  entity.LastName,
+		Nickname:  entity.Nickname,
+		Password:  entity.Password,
+		Email:     entity.Email,
+		Country:   entity.Country,
+		CreatedAt: entity.CreatedAt,
+		UpdatedAt: entity.UpdatedAt,
+	}
+	s.broker.Publish(UserChangeTopic, updatedUser)
 
 	return UpdateUserResponse{
-		User{
-			Id:        entity.Id,
-			FirstName: entity.FirstName,
-			LastName:  entity.LastName,
-			Nickname:  entity.Nickname,
-			Password:  entity.Password,
-			Email:     entity.Email,
-			Country:   entity.Country,
-			CreatedAt: entity.CreatedAt,
-			UpdatedAt: entity.UpdatedAt,
-		},
+		User: updatedUser,
 	}, nil
 }
 
