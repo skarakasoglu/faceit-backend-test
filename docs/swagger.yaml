@@ -1,0 +1,341 @@
+definitions:
+  apierr.ApiError:
+    properties:
+      code:
+        type: string
+      data: {}
+      message:
+        type: string
+    type: object
+  health.Response:
+    properties:
+      status:
+        type: boolean
+    type: object
+  sub.SubscribeRequest:
+    description: subscribe endpoint request model contains the subscription parameters
+    properties:
+      callback:
+        type: string
+      secret:
+        type: string
+      type:
+        type: string
+    required:
+    - callback
+    - type
+    type: object
+  sub.SubscribeResponse:
+    description: subscribe endpoint response model which containing the result of
+      the subscriptions
+    properties:
+      createdAt:
+        type: string
+      id:
+        type: string
+      status:
+        type: string
+      type:
+        type: string
+    type: object
+  user.CreateUserRequest:
+    description: create user endpoint request model
+    properties:
+      country:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      nickname:
+        type: string
+      password:
+        type: string
+    required:
+    - country
+    - email
+    - first_name
+    - last_name
+    - nickname
+    - password
+    type: object
+  user.CreateUserResponse:
+    description: create user endpoint response model containing the user information
+    properties:
+      country:
+        type: string
+      created_at:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: string
+      last_name:
+        type: string
+      nickname:
+        type: string
+      password:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  user.DeleteUserResponse:
+    description: delete user response model containing the id of deleted user
+    properties:
+      id:
+        type: string
+    type: object
+  user.GetUsersManyResponse:
+    description: get users response model that contains the users returned
+    properties:
+      users:
+        items:
+          $ref: '#/definitions/user.User'
+        type: array
+    type: object
+  user.UpdateUserRequest:
+    properties:
+      country:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      last_name:
+        type: string
+      nickname:
+        type: string
+      password:
+        type: string
+    required:
+    - country
+    - email
+    - first_name
+    - last_name
+    - nickname
+    - password
+    type: object
+  user.UpdateUserResponse:
+    description: update user endpoint response model containing updated user information
+    properties:
+      country:
+        type: string
+      created_at:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: string
+      last_name:
+        type: string
+      nickname:
+        type: string
+      password:
+        type: string
+      updated_at:
+        type: string
+    type: object
+  user.User:
+    description: user model
+    properties:
+      country:
+        type: string
+      created_at:
+        type: string
+      email:
+        type: string
+      first_name:
+        type: string
+      id:
+        type: string
+      last_name:
+        type: string
+      nickname:
+        type: string
+      password:
+        type: string
+      updated_at:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  title: Faceit Backend Test
+  version: "0.1"
+paths:
+  /v1/health:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/health.Response'
+      summary: checks the status of the service
+      tags:
+      - HealthController
+  /v1/subscribe:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: subscription details
+        in: body
+        name: SubscribeRequest
+        required: true
+        schema:
+          $ref: '#/definitions/sub.SubscribeRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/sub.SubscribeResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/apierr.ApiError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apierr.ApiError'
+      summary: creates a subscribe request to given topic and sends it to verification
+        queue, returns the subscription details.
+      tags:
+      - SubscribeController
+  /v1/users:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - default: 1
+        description: page number that will be returned
+        in: query
+        name: page
+        type: integer
+      - default: 10
+        description: how many rows are returned by page
+        in: query
+        name: perPage
+        type: integer
+      - description: filtering parameters that will be used while fetching the users
+        example: '{"country": "UK", "first_name": "Alisson"}'
+        in: query
+        name: filter
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.GetUsersManyResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/apierr.ApiError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apierr.ApiError'
+      summary: returns the users with respect to the pagination and filter parameters
+      tags:
+      - UserController
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: user details
+        in: body
+        name: CreateUserRequest
+        required: true
+        schema:
+          $ref: '#/definitions/user.CreateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.CreateUserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/apierr.ApiError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apierr.ApiError'
+      summary: creates a user
+      tags:
+      - UserController
+  /v1/users/{id}:
+    delete:
+      consumes:
+      - application/json
+      parameters:
+      - description: id of the user
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.DeleteUserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/apierr.ApiError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apierr.ApiError'
+      summary: deletes the user having id provided in path param
+      tags:
+      - UserController
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: id of the user
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: user details
+        in: body
+        name: UpdateUserRequest
+        required: true
+        schema:
+          $ref: '#/definitions/user.UpdateUserRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/user.UpdateUserResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/apierr.ApiError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/apierr.ApiError'
+      summary: updates a user having id provided in path param
+      tags:
+      - UserController
+swagger: "2.0"

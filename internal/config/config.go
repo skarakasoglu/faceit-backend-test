@@ -21,6 +21,8 @@ type LogConfig struct {
 
 type PostgresConfig struct {
 	Uri                string `split_words:"true" required:"true"`
+	ReconnectTimeout   int    `split_words:"true" default:"30"`
+	MaxReconnectTrials int    `split_words:"true" default:"10"`
 	MaxIdleConnections int    `split_words:"true" default:"5"`
 	MaxOpenConnections int    `split_words:"true" default:"10"`
 }

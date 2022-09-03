@@ -10,6 +10,8 @@ const (
 	notificationMessageTypeNotification = "notification"
 )
 
+// NotificationSubscriber is the model used for storing subscriber information
+// this information is passed to the subscriber in the initial request.
 type NotificationSubscriber struct {
 	Id          string
 	Topic       string
@@ -19,6 +21,7 @@ type NotificationSubscriber struct {
 	CreatedAt   time.Time
 }
 
+// verificationPayload is the model used in verification flow of the webhook.
 type verificationPayload struct {
 	Id        string    `json:"id"`
 	Challenge string    `json:"challenge"`
@@ -26,6 +29,7 @@ type verificationPayload struct {
 	CreatedAt time.Time `json:"createdAt"`
 }
 
+// notificationPayload is the model used in notification flow of the webhook.
 type notificationPayload struct {
 	messageId string
 	timestamp time.Time

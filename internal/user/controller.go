@@ -3,6 +3,7 @@ package user
 import (
 	"context"
 	"encoding/json"
+	_ "faceit-backend-test/docs"
 	"faceit-backend-test/internal/apierr"
 	"faceit-backend-test/internal/router"
 	"fmt"
@@ -25,6 +26,8 @@ type Service interface {
 	GetMany(ctx context.Context, request GetUsersManyRequest) (GetUsersManyResponse, error)
 }
 
+// controller it handles the operations related to users
+// @tag.name UserController
 type controller struct {
 	service Service
 }
@@ -33,6 +36,7 @@ var _ router.Controller = (*controller)(nil)
 
 type ControllerOpts func(*controller)
 
+// NewController create new instance of user.Controller with options
 func NewController(opts ...ControllerOpts) router.Controller {
 	c := &controller{}
 
@@ -48,6 +52,8 @@ func WithService(service Service) ControllerOpts {
 	}
 }
 
+// Register it registers the routes and handlers
+// to the router group passed as an argument.
 func (c *controller) Register(r *gin.RouterGroup) {
 	r.GET(route, c.getUsersMany)
 	r.POST(route, c.createUser)
@@ -55,6 +61,16 @@ func (c *controller) Register(r *gin.RouterGroup) {
 	r.DELETE(fmt.Sprintf("%v/:id", route), c.deleteUserById)
 }
 
+// createUser godoc
+// @Summary creates a user
+// @tags UserController
+// @Accept json
+// @Produce json
+// @Param CreateUserRequest body CreateUserRequest true "user details"
+// @Success 200 {object} CreateUserResponse
+// @Failure 400 {object} apierr.ApiError
+// @Failure 500 {object} apierr.ApiError
+// @Router /v1/users [post]
 func (c *controller) createUser(ctx *gin.Context) {
 	var req CreateUserRequest
 	err := ctx.ShouldBindJSON(&req)
@@ -72,6 +88,17 @@ func (c *controller) createUser(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, resp)
 }
 
+// updateUser godoc
+// @Summary updates a user having id provided in path param
+// @tags UserController
+// @Accept json
+// @Produce json
+// @Param id path string true "id of the user"
+// @Param UpdateUserRequest body UpdateUserRequest true "user details"
+// @Success 200 {object} UpdateUserResponse
+// @Failure 400 {object} apierr.ApiError
+// @Failure 500 {object} apierr.ApiError
+// @Router /v1/users/{id} [patch]
 func (c *controller) updateUser(ctx *gin.Context) {
 	var req UpdateUserRequest
 	err := ctx.ShouldBindJSON(&req)
@@ -90,6 +117,16 @@ func (c *controller) updateUser(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, resp)
 }
 
+// deleteUserById godoc
+// @Summary deletes the user having id provided in path param
+// @tags UserController
+// @Accept json
+// @Produce json
+// @Param id path string true "id of the user"
+// @Success 200 {object} DeleteUserResponse
+// @Failure 400 {object} apierr.ApiError
+// @Failure 500 {object} apierr.ApiError
+// @Router /v1/users/{id} [delete]
 func (c *controller) deleteUserById(ctx *gin.Context) {
 	var req DeleteUserByIdRequest
 	err := ctx.ShouldBindUri(&req)
@@ -107,6 +144,18 @@ func (c *controller) deleteUserById(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, resp)
 }
 
+// getUsersMany godoc
+// @Summary returns the users with respect to the pagination and filter parameters
+// @tags UserController
+// @Accept json
+// @Produce json
+// @Param page query int false "page number that will be returned" Default(1)
+// @Param perPage query int false "how many rows are returned by page" Default(10)
+// @Param filter query string false "filtering parameters that will be used while fetching the users" example({"country": "UK", "first_name": "Alisson"})
+// @Success 200 {object} GetUsersManyResponse
+// @Failure 400 {object} apierr.ApiError
+// @Failure 500 {object} apierr.ApiError
+// @Router /v1/users [get]
 func (c *controller) getUsersMany(ctx *gin.Context) {
 	var req GetUsersManyRequest
 	var err error

@@ -1,5 +1,7 @@
 package user
 
+// CreateUserRequest create user endpoint request model contains the user details
+// @Description create user endpoint request model
 type CreateUserRequest struct {
 	FirstName string `json:"first_name" binding:"required"`
 	LastName  string `json:"last_name" binding:"required"`
