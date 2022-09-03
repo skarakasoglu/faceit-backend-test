@@ -287,9 +287,43 @@ const docTemplate = `{
                 }
             }
         },
+        "health.DatabaseConnection": {
+            "type": "object",
+            "properties": {
+                "connected": {
+                    "type": "boolean"
+                },
+                "error": {
+                    "type": "string"
+                }
+            }
+        },
+        "health.MemoryStats": {
+            "type": "object",
+            "properties": {
+                "completed_garbage_collector_cycles": {
+                    "type": "integer"
+                },
+                "current_allocated": {
+                    "type": "integer"
+                },
+                "total_allocated": {
+                    "type": "integer"
+                },
+                "total_memory": {
+                    "type": "integer"
+                }
+            }
+        },
         "health.Response": {
             "type": "object",
             "properties": {
+                "database_connection": {
+                    "$ref": "#/definitions/health.DatabaseConnection"
+                },
+                "memory_stats": {
+                    "$ref": "#/definitions/health.MemoryStats"
+                },
                 "status": {
                     "type": "boolean"
                 }

@@ -7,8 +7,30 @@ definitions:
       message:
         type: string
     type: object
+  health.DatabaseConnection:
+    properties:
+      connected:
+        type: boolean
+      error:
+        type: string
+    type: object
+  health.MemoryStats:
+    properties:
+      completed_garbage_collector_cycles:
+        type: integer
+      current_allocated:
+        type: integer
+      total_allocated:
+        type: integer
+      total_memory:
+        type: integer
+    type: object
   health.Response:
     properties:
+      database_connection:
+        $ref: '#/definitions/health.DatabaseConnection'
+      memory_stats:
+        $ref: '#/definitions/health.MemoryStats'
       status:
         type: boolean
     type: object
