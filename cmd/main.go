@@ -148,7 +148,9 @@ func initHTTPHandler(s *Service, routes ...router.Controller) error {
 func initRoutes(db *sqlx.DB) []router.Controller {
 	broker := pubsub.NewBroker()
 
-	healthCheck := health.NewController()
+	healthCheck := health.NewController(
+		health.WithDb(db),
+	)
 
 	userRepository := user.NewRepository(user.WithDb(db))
 	userService := user.NewService(
