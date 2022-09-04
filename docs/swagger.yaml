@@ -51,7 +51,7 @@ definitions:
     description: subscribe endpoint response model which containing the result of
       the subscriptions
     properties:
-      createdAt:
+      created_at:
         type: string
       id:
         type: string

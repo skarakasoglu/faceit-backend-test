@@ -352,7 +352,7 @@ const docTemplate = `{
             "description": "subscribe endpoint response model which containing the result of the subscriptions",
             "type": "object",
             "properties": {
-                "createdAt": {
+                "created_at": {
                     "type": "string"
                 },
                 "id": {
