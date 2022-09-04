@@ -3,6 +3,11 @@ DOC_EXECUTABLES = swag
 test:
 	CGO_ENABLED=0 go test -v ./...
 
+coverage:
+	go get golang.org/x/tools/cmd/cover
+	go test -v -coverprofile cover.out ./... -mod=mod
+	go tool cover -html=cover.out -o cover.html
+
 build:
 	go mod vendor
 	GO111MODULE=on
