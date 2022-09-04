@@ -33,29 +33,6 @@ func (m *mockRepository) GetMany(ctx context.Context, parameters GetManyParamete
 	return m.getManyMock(ctx, parameters)
 }
 
-type mockBroker struct {
-	publishMock          func(string, interface{})
-	subscribeMock        func(pubsub.Subscriber, string)
-	unsubscribeMock      func(pubsub.Subscriber, string)
-	removeSubscriberMock func(pubsub.Subscriber)
-}
-
-func (m *mockBroker) Subscribe(s pubsub.Subscriber, topic string) {
-	m.subscribeMock(s, topic)
-}
-
-func (m *mockBroker) Unsubscribe(s pubsub.Subscriber, topic string) {
-	m.unsubscribeMock(s, topic)
-}
-
-func (m *mockBroker) Publish(topic string, msg interface{}) {
-	m.publishMock(topic, msg)
-}
-
-func (m *mockBroker) RemoveSubscriber(s pubsub.Subscriber) {
-	m.removeSubscriberMock(s)
-}
-
 func TestService_Create(t *testing.T) {
 	t.Run("success", func(t *testing.T) {
 		req := CreateUserRequest{
@@ -157,8 +134,8 @@ func TestService_Update(t *testing.T) {
 			UpdatedAt: e.UpdatedAt,
 		}}
 
-		mockBroker := &mockBroker{}
-		mockBroker.publishMock = func(s string, i interface{}) {
+		mockBroker := &pubsub.MockBroker{}
+		mockBroker.PublishMock = func(s string, i interface{}) {
 			assert.Equal(t, UserChangeTopic, s)
 			assert.IsType(t, User{}, i)
 

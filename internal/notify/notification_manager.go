@@ -39,7 +39,7 @@ func NewNotificationManager(topics []string, opts ...NotificationManagerOpts) *n
 	for _, topic := range topics {
 		subscriber := pubsub.NewSubscriber()
 		n.broker.Subscribe(subscriber, topic)
-		n.notificationWebhookHandlers[topic] = newTopicHandler(n.logger, subscriber)
+		n.notificationWebhookHandlers[topic] = newNotificationWebhookHandler(n.logger, subscriber)
 	}
 
 	return n

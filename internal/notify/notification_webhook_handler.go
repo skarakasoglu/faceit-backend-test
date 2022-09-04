@@ -18,7 +18,7 @@ type notificationWebhookHandler struct {
 	mtx                 sync.RWMutex
 }
 
-func newTopicHandler(logger *logrus.Logger, subscriber pubsub.Subscriber) *notificationWebhookHandler {
+func newNotificationWebhookHandler(logger *logrus.Logger, subscriber pubsub.Subscriber) *notificationWebhookHandler {
 	return &notificationWebhookHandler{
 		logger:              logger,
 		eventSubscriber:     subscriber,
