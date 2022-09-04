@@ -14,31 +14,31 @@ import (
 	"testing"
 )
 
-type serviceMock struct {
+type mockService struct {
 	createMock     func(context.Context, CreateUserRequest) (CreateUserResponse, error)
 	updateMock     func(context.Context, UpdateUserRequest) (UpdateUserResponse, error)
 	deleteByIdMock func(context.Context, DeleteUserByIdRequest) (DeleteUserResponse, error)
 	getManyMock    func(context.Context, GetUsersManyRequest) (GetUsersManyResponse, error)
 }
 
-func (s *serviceMock) Create(ctx context.Context, request CreateUserRequest) (CreateUserResponse, error) {
+func (s *mockService) Create(ctx context.Context, request CreateUserRequest) (CreateUserResponse, error) {
 	return s.createMock(ctx, request)
 }
 
-func (s *serviceMock) Update(ctx context.Context, request UpdateUserRequest) (UpdateUserResponse, error) {
+func (s *mockService) Update(ctx context.Context, request UpdateUserRequest) (UpdateUserResponse, error) {
 	return s.updateMock(ctx, request)
 }
 
-func (s *serviceMock) DeleteById(ctx context.Context, request DeleteUserByIdRequest) (DeleteUserResponse, error) {
+func (s *mockService) DeleteById(ctx context.Context, request DeleteUserByIdRequest) (DeleteUserResponse, error) {
 	return s.deleteByIdMock(ctx, request)
 }
 
-func (s *serviceMock) GetMany(ctx context.Context, request GetUsersManyRequest) (GetUsersManyResponse, error) {
+func (s *mockService) GetMany(ctx context.Context, request GetUsersManyRequest) (GetUsersManyResponse, error) {
 	return s.getManyMock(ctx, request)
 }
 
 func TestController_CreateUser(t *testing.T) {
-	mockService := &serviceMock{}
+	mockService := &mockService{}
 	gin.SetMode(gin.TestMode)
 	controller := NewController(WithService(mockService))
 	router := gin.Default()
@@ -147,7 +147,7 @@ func TestController_CreateUser(t *testing.T) {
 }
 
 func TestController_UpdateUser(t *testing.T) {
-	mockService := &serviceMock{}
+	mockService := &mockService{}
 	controller := NewController(WithService(mockService))
 
 	gin.SetMode(gin.TestMode)
@@ -258,7 +258,7 @@ func TestController_UpdateUser(t *testing.T) {
 }
 
 func TestController_DeleteUserById(t *testing.T) {
-	mockService := &serviceMock{}
+	mockService := &mockService{}
 	controller := NewController(WithService(mockService))
 
 	gin.SetMode(gin.TestMode)
@@ -324,7 +324,7 @@ func TestController_DeleteUserById(t *testing.T) {
 }
 
 func TestController_GetUsersMany(t *testing.T) {
-	mockService := &serviceMock{}
+	mockService := &mockService{}
 	controller := NewController(WithService(mockService))
 
 	gin.SetMode(gin.TestMode)
