@@ -153,11 +153,10 @@ func initRoutes(db *sqlx.DB) []router.Controller {
 	)
 
 	userRepository := user.NewRepository(user.WithDb(db))
-	userService := user.NewService(
+	userService := user.NewServiceLoggingMiddleware(logger.WithField("service", "userService").Logger)(user.NewService(
 		user.WithRepository(userRepository),
 		user.WithBroker(broker),
-	)
-	userService = user.NewServiceLoggingMiddleware(logger.WithField("service", "userService").Logger)(userService)
+	))
 	users := user.NewController(
 		user.WithService(userService),
 	)
