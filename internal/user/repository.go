@@ -15,7 +15,7 @@ const insertUserQuery = `INSERT INTO users(first_name, last_name, nickname, pass
 const updateUserQuery = `UPDATE users SET first_name=:first_name, last_name=:last_name, 
 						nickname=:nickname, password=:password, email=:email, country=:country 
 						where id=:id
-						RETURNING created_at, updated_at;`
+						RETURNING updated_at;`
 const deleteUserByIdQuery = `DELETE FROM users WHERE id=:id;`
 const selectUsersQuery = `SELECT id, first_name, last_name, nickname, 
 							password, email, country, created_at, updated_at FROM users WHERE 1 = 1`
@@ -64,7 +64,7 @@ func (r *repository) Update(ctx context.Context, entity Entity) (Entity, error) 
 		return Entity{}, err
 	}
 
-	err = stmt.QueryRowContext(ctx, entity).Scan(&entity.CreatedAt, &entity.UpdatedAt)
+	err = stmt.QueryRowContext(ctx, entity).Scan(&entity.UpdatedAt)
 	return entity, err
 }
 
@@ -75,6 +75,7 @@ func (r *repository) DeleteById(ctx context.Context, id string) error {
 	}
 
 	_, err = stmt.ExecContext(ctx, map[string]interface{}{"id": id})
+	defer stmt.Close()
 	return err
 }
 
@@ -140,5 +141,5 @@ func (r *repository) createFilterQuery(filter Entity) string {
 func (r *repository) createPaginationQuery(page int, perPage int) string {
 	offset := perPage * (page - 1)
 	limit := perPage
-	return fmt.Sprintf(" LIMIT %d OFFSET %d;", limit, offset)
+	return fmt.Sprintf("LIMIT %d OFFSET %d;", limit, offset)
 }
