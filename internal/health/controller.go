@@ -18,9 +18,11 @@ type controller struct {
 	serviceStatus bool
 }
 
+var _ router.Controller = (*controller)(nil)
+
 type ControllerOpts func(controller2 *controller)
 
-func NewController(opts ...ControllerOpts) router.Controller {
+func NewController(opts ...ControllerOpts) *controller {
 	c := &controller{}
 
 	for _, opt := range opts {

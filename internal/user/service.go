@@ -29,7 +29,7 @@ var _ Service = (*service)(nil)
 
 type ServiceOpts func(*service)
 
-func NewService(opts ...ServiceOpts) Service {
+func NewService(opts ...ServiceOpts) *service {
 	s := &service{}
 
 	for _, opt := range opts {

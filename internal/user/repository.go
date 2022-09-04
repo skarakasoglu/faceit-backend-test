@@ -28,7 +28,7 @@ var _ Repository = (*repository)(nil)
 
 type RepositoryOpts func(*repository)
 
-func NewRepository(opts ...RepositoryOpts) Repository {
+func NewRepository(opts ...RepositoryOpts) *repository {
 	r := &repository{}
 
 	for _, opt := range opts {

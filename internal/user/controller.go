@@ -37,7 +37,7 @@ var _ router.Controller = (*controller)(nil)
 type ControllerOpts func(*controller)
 
 // NewController create new instance of user.Controller with options
-func NewController(opts ...ControllerOpts) router.Controller {
+func NewController(opts ...ControllerOpts) *controller {
 	c := &controller{}
 
 	for _, opt := range opts {
