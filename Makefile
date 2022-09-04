@@ -1,7 +1,7 @@
 DOC_EXECUTABLES = swag
 
 test:
-	go test -v ./...
+	CGO_ENABLED=0 go test -v ./...
 
 build:
 	go mod vendor

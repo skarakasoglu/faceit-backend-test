@@ -1,0 +1,11 @@
+FROM golang:1.19-alpine
+
+RUN apk update && apk add make
+ADD . /app/faceit-backend-test
+
+WORKDIR /app/faceit-backend-test
+
+ENV GO111MODULE=on
+ENV GOFLAGS="-mod=vendor"
+
+ENTRYPOINT ["make", "test"]
