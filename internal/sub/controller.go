@@ -43,10 +43,10 @@ func WithService(service Service) ControllerOpts {
 
 // Register registers the endpoints to the given router group
 func (c *controller) Register(r *gin.RouterGroup) {
-	r.POST(route, c.subscribe)
+	r.POST(route, c.Subscribe)
 }
 
-// subscribe godoc
+// Subscribe godoc
 // @Summary creates a subscribe request to given topic and sends it to verification queue, returns the subscription details.
 // @tags SubscribeController
 // @Accept json
@@ -56,7 +56,7 @@ func (c *controller) Register(r *gin.RouterGroup) {
 // @Failure 400 {object} apierr.ApiError
 // @Failure 500 {object} apierr.ApiError
 // @Router /v1/subscribe [post]
-func (c *controller) subscribe(ctx *gin.Context) {
+func (c *controller) Subscribe(ctx *gin.Context) {
 	var req SubscribeRequest
 	err := ctx.ShouldBindJSON(&req)
 	if err != nil {
