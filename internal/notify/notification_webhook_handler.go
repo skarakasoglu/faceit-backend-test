@@ -13,12 +13,12 @@ import (
 // it sends the notifications triggered by the topic to the subscribers.
 type notificationWebhookHandler struct {
 	logger              *logrus.Logger
-	eventSubscriber     *pubsub.Subscriber
+	eventSubscriber     pubsub.Subscriber
 	notificationClients []*notificationWebhookClient
 	mtx                 sync.RWMutex
 }
 
-func newTopicHandler(logger *logrus.Logger, subscriber *pubsub.Subscriber) *notificationWebhookHandler {
+func newTopicHandler(logger *logrus.Logger, subscriber pubsub.Subscriber) *notificationWebhookHandler {
 	return &notificationWebhookHandler{
 		logger:              logger,
 		eventSubscriber:     subscriber,

@@ -22,7 +22,7 @@ type Repository interface {
 
 type service struct {
 	repo   Repository
-	broker *pubsub.Broker
+	broker pubsub.Broker
 }
 
 var _ Service = (*service)(nil)
@@ -45,7 +45,7 @@ func WithRepository(repo Repository) ServiceOpts {
 	}
 }
 
-func WithBroker(broker *pubsub.Broker) ServiceOpts {
+func WithBroker(broker pubsub.Broker) ServiceOpts {
 	return func(s *service) {
 		s.broker = broker
 	}

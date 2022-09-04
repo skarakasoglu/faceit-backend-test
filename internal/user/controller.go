@@ -55,13 +55,13 @@ func WithService(service Service) ControllerOpts {
 // Register it registers the routes and handlers
 // to the router group passed as an argument.
 func (c *controller) Register(r *gin.RouterGroup) {
-	r.GET(route, c.getUsersMany)
-	r.POST(route, c.createUser)
-	r.PATCH(fmt.Sprintf("%v/:id", route), c.updateUser)
-	r.DELETE(fmt.Sprintf("%v/:id", route), c.deleteUserById)
+	r.GET(route, c.GetUsersMany)
+	r.POST(route, c.CreateUser)
+	r.PATCH(fmt.Sprintf("%v/:id", route), c.UpdateUser)
+	r.DELETE(fmt.Sprintf("%v/:id", route), c.DeleteUserById)
 }
 
-// createUser godoc
+// CreateUser godoc
 // @Summary creates a user
 // @tags UserController
 // @Accept json
@@ -71,7 +71,7 @@ func (c *controller) Register(r *gin.RouterGroup) {
 // @Failure 400 {object} apierr.ApiError
 // @Failure 500 {object} apierr.ApiError
 // @Router /v1/users [post]
-func (c *controller) createUser(ctx *gin.Context) {
+func (c *controller) CreateUser(ctx *gin.Context) {
 	var req CreateUserRequest
 	err := ctx.ShouldBindJSON(&req)
 	if err != nil {
@@ -88,7 +88,7 @@ func (c *controller) createUser(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, resp)
 }
 
-// updateUser godoc
+// UpdateUser godoc
 // @Summary updates a user having id provided in path param
 // @tags UserController
 // @Accept json
@@ -99,7 +99,7 @@ func (c *controller) createUser(ctx *gin.Context) {
 // @Failure 400 {object} apierr.ApiError
 // @Failure 500 {object} apierr.ApiError
 // @Router /v1/users/{id} [patch]
-func (c *controller) updateUser(ctx *gin.Context) {
+func (c *controller) UpdateUser(ctx *gin.Context) {
 	var req UpdateUserRequest
 	err := ctx.ShouldBindJSON(&req)
 	if err != nil {
@@ -117,7 +117,7 @@ func (c *controller) updateUser(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, resp)
 }
 
-// deleteUserById godoc
+// DeleteUserById godoc
 // @Summary deletes the user having id provided in path param
 // @tags UserController
 // @Accept json
@@ -127,7 +127,7 @@ func (c *controller) updateUser(ctx *gin.Context) {
 // @Failure 400 {object} apierr.ApiError
 // @Failure 500 {object} apierr.ApiError
 // @Router /v1/users/{id} [delete]
-func (c *controller) deleteUserById(ctx *gin.Context) {
+func (c *controller) DeleteUserById(ctx *gin.Context) {
 	var req DeleteUserByIdRequest
 	err := ctx.ShouldBindUri(&req)
 	if err != nil {
@@ -144,7 +144,7 @@ func (c *controller) deleteUserById(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, resp)
 }
 
-// getUsersMany godoc
+// GetUsersMany godoc
 // @Summary returns the users with respect to the pagination and filter parameters
 // @tags UserController
 // @Accept json
@@ -156,7 +156,7 @@ func (c *controller) deleteUserById(ctx *gin.Context) {
 // @Failure 400 {object} apierr.ApiError
 // @Failure 500 {object} apierr.ApiError
 // @Router /v1/users [get]
-func (c *controller) getUsersMany(ctx *gin.Context) {
+func (c *controller) GetUsersMany(ctx *gin.Context) {
 	var req GetUsersManyRequest
 	var err error
 	req.Page = defaultPage

@@ -147,118 +147,129 @@ func NewMock() (*sqlx.DB, sqlmock.Sqlmock) {
 }
 
 func TestRepository_Create(t *testing.T) {
-	db, mock := NewMock()
-	repo := NewRepository(
-		WithDb(db),
-	)
+	t.Run("success", func(t *testing.T) {
+		db, mock := NewMock()
+		repo := NewRepository(
+			WithDb(db),
+		)
 
-	rows := sqlmock.
-		NewRows([]string{"id", "created_at", "updated_at"}).AddRow(e.Id, e.CreatedAt, e.UpdatedAt)
+		rows := sqlmock.
+			NewRows([]string{"id", "created_at", "updated_at"}).AddRow(e.Id, e.CreatedAt, e.UpdatedAt)
 
-	insertQuery := "INSERT INTO users"
-	prep := mock.ExpectPrepare(insertQuery)
-	prep.ExpectQuery().
-		WithArgs(e.FirstName, e.LastName, e.Nickname, e.Password, e.Email, e.Country).
-		WillReturnRows(rows)
+		insertQuery := "INSERT INTO users"
+		prep := mock.ExpectPrepare(insertQuery)
+		prep.ExpectQuery().
+			WithArgs(e.FirstName, e.LastName, e.Nickname, e.Password, e.Email, e.Country).
+			WillReturnRows(rows)
 
-	actual, err := repo.Create(context.Background(), e)
-	assert.NoError(t, err)
-	assert.EqualValues(t, e, actual, "should return id, created_at and updated_at fields matching with the database on create query")
-}
+		actual, err := repo.Create(context.Background(), e)
+		assert.NoError(t, err)
+		assert.EqualValues(t, e, actual, "should return id, created_at and updated_at fields matching with the database on create query")
+	})
 
-func TestRepository_CreateQueryMissingArgumentError(t *testing.T) {
-	db, mock := NewMock()
-	repo := NewRepository(
-		WithDb(db),
-	)
+	t.Run("query missing argument error", func(t *testing.T) {
+		db, mock := NewMock()
+		repo := NewRepository(
+			WithDb(db),
+		)
 
-	insertQuery := "INSERT INTO users"
-	prep := mock.ExpectPrepare(insertQuery)
-	prep.ExpectQuery().
-		WithArgs(e.FirstName, e.LastName, e.Nickname, e.Password, e.Email)
+		insertQuery := "INSERT INTO users"
+		prep := mock.ExpectPrepare(insertQuery)
+		prep.ExpectQuery().
+			WithArgs(e.FirstName, e.LastName, e.Nickname, e.Password, e.Email)
 
-	_, err := repo.Create(context.Background(), e)
-	assert.Error(t, err, "should return error when there is a missing argument")
+		_, err := repo.Create(context.Background(), e)
+		assert.Error(t, err, "should return error when there is a missing argument")
+	})
 }
 
 func TestRepository_Update(t *testing.T) {
-	db, mock := NewMock()
-	repo := NewRepository(
-		WithDb(db),
-	)
+	t.Run("success", func(t *testing.T) {
+		db, mock := NewMock()
+		repo := NewRepository(
+			WithDb(db),
+		)
 
-	rows := sqlmock.
-		NewRows([]string{"updated_at"}).AddRow(e.UpdatedAt)
+		rows := sqlmock.
+			NewRows([]string{"updated_at"}).AddRow(e.UpdatedAt)
 
-	query := "UPDATE users"
-	prep := mock.ExpectPrepare(query)
-	prep.ExpectQuery().
-		WithArgs(e.FirstName, e.LastName, e.Nickname, e.Password, e.Email, e.Country, e.Id).
-		WillReturnRows(rows)
+		query := "UPDATE users"
+		prep := mock.ExpectPrepare(query)
+		prep.ExpectQuery().
+			WithArgs(e.FirstName, e.LastName, e.Nickname, e.Password, e.Email, e.Country, e.Id).
+			WillReturnRows(rows)
 
-	actual, err := repo.Update(context.Background(), e)
-	assert.NoError(t, err)
-	assert.EqualValues(t, e, actual, "should return updated_at field matching with the database on update query")
+		actual, err := repo.Update(context.Background(), e)
+		assert.NoError(t, err)
+		assert.EqualValues(t, e, actual, "should return updated_at field matching with the database on update query")
+	})
 }
 
 func TestRepository_DeleteById(t *testing.T) {
-	db, mock := NewMock()
-	repo := NewRepository(
-		WithDb(db),
-	)
+	t.Run("success", func(t *testing.T) {
+		db, mock := NewMock()
+		repo := NewRepository(
+			WithDb(db),
+		)
 
-	query := "DELETE FROM users"
-	prep := mock.ExpectPrepare(query)
-	prep.ExpectExec().
-		WithArgs(e.Id).
-		WillReturnResult(sqlmock.NewResult(0, 1))
+		query := "DELETE FROM users"
+		prep := mock.ExpectPrepare(query)
+		prep.ExpectExec().
+			WithArgs(e.Id).
+			WillReturnResult(sqlmock.NewResult(0, 1))
 
-	err := repo.DeleteById(context.Background(), e.Id)
-	assert.NoError(t, err)
+		err := repo.DeleteById(context.Background(), e.Id)
+		assert.NoError(t, err)
+	})
 }
 
 func TestRepository_GetMany(t *testing.T) {
-	db, mock := NewMock()
-	repo := NewRepository(
-		WithDb(db),
-	)
+	t.Run("success", func(t *testing.T) {
+		db, mock := NewMock()
+		repo := NewRepository(
+			WithDb(db),
+		)
 
-	rows := sqlmock.NewRows([]string{"id", "first_name", "last_name", "nickname", "password", "email", "country", "created_at", "updated_at"}).
-		AddRow(e.Id, e.FirstName, e.LastName, e.Nickname, e.Password, e.Email, e.Country, e.CreatedAt, e.UpdatedAt)
+		rows := sqlmock.NewRows([]string{"id", "first_name", "last_name", "nickname", "password", "email", "country", "created_at", "updated_at"})
+		for _, e := range entities {
+			rows.AddRow(e.Id, e.FirstName, e.LastName, e.Nickname, e.Password, e.Email, e.Country, e.CreatedAt, e.UpdatedAt)
+		}
 
-	params := GetManyParameters{
-		Page:    1,
-		PerPage: 3,
-		Filter:  Entity{},
-	}
+		params := GetManyParameters{
+			Page:    1,
+			PerPage: 3,
+			Filter:  Entity{},
+		}
 
-	query := "SELECT (.+) FROM users WHERE"
-	prep := mock.ExpectPrepare(query)
-	prep.ExpectQuery().WillReturnRows(rows)
+		query := "SELECT (.+) FROM users WHERE"
+		prep := mock.ExpectPrepare(query)
+		prep.ExpectQuery().WillReturnRows(rows)
 
-	_, err := repo.GetMany(context.Background(), params)
-	assert.NoError(t, err)
-}
+		actual, err := repo.GetMany(context.Background(), params)
+		assert.NoError(t, err)
+		assert.EqualValues(t, entities, actual)
+	})
 
-func TestRepository_GetManyArgumentMismatch(t *testing.T) {
-	db, mock := NewMock()
-	repo := NewRepository(
-		WithDb(db),
-	)
+	t.Run("argument mismatch", func(t *testing.T) {
+		db, mock := NewMock()
+		repo := NewRepository(
+			WithDb(db),
+		)
 
-	rows := sqlmock.NewRows([]string{"id", "first_name", "last_name", "nickname", "password", "email", "country", "created_at", "updated_at"}).
-		AddRow(e.Id, e.FirstName, e.LastName, e.Nickname, e.Password, e.Email, e.Country, e.CreatedAt, e.UpdatedAt)
+		rows := sqlmock.NewRows([]string{"id", "first_name", "last_name", "nickname", "password", "email", "country", "created_at", "updated_at"}).
+			AddRow(e.Id, e.FirstName, e.LastName, e.Nickname, e.Password, e.Email, e.Country, e.CreatedAt, e.UpdatedAt)
 
-	params := GetManyParameters{
-		Page:    1,
-		PerPage: 3,
-		Filter:  Entity{},
-	}
+		params := GetManyParameters{
+			Page:    1,
+			PerPage: 3,
+			Filter:  Entity{},
+		}
 
-	query := "SELECT (.+) FROM users WHERE"
-	prep := mock.ExpectPrepare(query)
-	prep.ExpectQuery().WithArgs(e.Country).WillReturnRows(rows)
+		query := "SELECT (.+) FROM users WHERE"
+		prep := mock.ExpectPrepare(query)
+		prep.ExpectQuery().WithArgs(e.Country).WillReturnRows(rows)
 
-	_, err := repo.GetMany(context.Background(), params)
-	assert.Error(t, err)
+		_, err := repo.GetMany(context.Background(), params)
+		assert.Error(t, err)
+	})
 }

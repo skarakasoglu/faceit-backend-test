@@ -16,7 +16,7 @@ type NotificationManager interface {
 // notificationManager verifies the subscriptions and
 // creates the notification handlers topic by topic
 type notificationManager struct {
-	broker                      *pubsub.Broker
+	broker                      pubsub.Broker
 	pendingVerification         chan *notificationWebhookClient
 	notificationWebhookHandlers map[string]*notificationWebhookHandler
 	logger                      *logrus.Logger
@@ -51,7 +51,7 @@ func WithLogger(logger *logrus.Logger) NotificationManagerOpts {
 	}
 }
 
-func WithBroker(broker *pubsub.Broker) NotificationManagerOpts {
+func WithBroker(broker pubsub.Broker) NotificationManagerOpts {
 	return func(manager *notificationManager) {
 		manager.broker = broker
 	}

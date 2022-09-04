@@ -7,7 +7,18 @@ import (
 
 const messageBuffer = 100
 
-type Subscriber struct {
+type Subscriber interface {
+	AddTopic(string)
+	RemoveTopic(string)
+	Signal(msg *Message)
+	Destruct()
+	Messages() <-chan *Message
+	Topics() map[string]bool
+	Id() string
+	Active() bool
+}
+
+type subscriber struct {
 	id       string
 	messages chan *Message
 	topics   map[string]bool
@@ -15,9 +26,9 @@ type Subscriber struct {
 	mtx      sync.RWMutex
 }
 
-func NewSubscriber() *Subscriber {
+func NewSubscriber() *subscriber {
 	id := uuid.New().String()
-	return &Subscriber{
+	return &subscriber{
 		id:       id,
 		messages: make(chan *Message, messageBuffer),
 		topics:   map[string]bool{},
@@ -25,31 +36,43 @@ func NewSubscriber() *Subscriber {
 	}
 }
 
-func (s *Subscriber) AddTopic(topic string) {
+func (s *subscriber) AddTopic(topic string) {
 	s.mtx.Lock()
 	defer s.mtx.Unlock()
 
 	s.topics[topic] = true
 }
 
-func (s *Subscriber) RemoveTopic(topic string) {
+func (s *subscriber) RemoveTopic(topic string) {
 	s.mtx.Lock()
 	defer s.mtx.Unlock()
 
 	s.topics[topic] = false
 }
 
-func (s *Subscriber) Signal(msg *Message) {
+func (s *subscriber) Signal(msg *Message) {
 	if s.active {
 		s.messages <- msg
 	}
 }
 
-func (s *Subscriber) Destruct() {
+func (s *subscriber) Destruct() {
 	s.active = false
 	close(s.messages)
 }
 
-func (s *Subscriber) Messages() <-chan *Message {
+func (s *subscriber) Messages() <-chan *Message {
 	return s.messages
+}
+
+func (s *subscriber) Topics() map[string]bool {
+	return s.topics
+}
+
+func (s *subscriber) Id() string {
+	return s.id
+}
+
+func (s *subscriber) Active() bool {
+	return s.active
 }
