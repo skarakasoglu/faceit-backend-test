@@ -238,7 +238,9 @@ func TestRepository_GetMany(t *testing.T) {
 		params := GetManyParameters{
 			Page:    1,
 			PerPage: 3,
-			Filter:  Entity{},
+			Filter: Entity{
+				Country: "UK",
+			},
 		}
 
 		query := "SELECT (.+) FROM users WHERE"

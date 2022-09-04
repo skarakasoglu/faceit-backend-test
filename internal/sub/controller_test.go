@@ -22,6 +22,24 @@ func (m *mockService) Subscribe(ctx context.Context, request SubscribeRequest) (
 	return m.subscribeMock(ctx, request)
 }
 
+func TestController_Register(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	router := gin.Default()
+	controller := NewController()
+
+	t.Run("", func(t *testing.T) {
+		controller.Register(&router.RouterGroup)
+
+		rr := httptest.NewRecorder()
+		request, err := http.NewRequest(http.MethodPost, "/subscribe", nil)
+		assert.NoError(t, err)
+
+		router.ServeHTTP(rr, request)
+
+		assert.NotEqual(t, http.StatusNotFound, rr.Code)
+	})
+}
+
 func TestController_Subscribe(t *testing.T) {
 	mockService := &mockService{}
 	gin.SetMode(gin.TestMode)
