@@ -141,5 +141,5 @@ func (r *repository) createFilterQuery(filter Entity) string {
 func (r *repository) createPaginationQuery(page int, perPage int) string {
 	offset := perPage * (page - 1)
 	limit := perPage
-	return fmt.Sprintf("LIMIT %d OFFSET %d;", limit, offset)
+	return fmt.Sprintf(" LIMIT %d OFFSET %d;", limit, offset)
 }
