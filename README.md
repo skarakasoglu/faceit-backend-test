@@ -2,7 +2,7 @@
 ## Introduction
 This is a microservice that manages user operations.
 
-## Tech Stack
+##$ Tech Stack
 Golang, Docker, Postgresql
 
 ### Allowed Endpoints and Methods
@@ -18,6 +18,13 @@ Golang, Docker, Postgresql
 | /v1/users      | POST   |
 | /v1/users/{id} | DELETE |
 | /v1/users/{id} | PATCH  |
+
+## Design Choices
+
+### API
+API has 3 controllers which are subscribe, health and users. 
+I've created a package for each controller because I think that it is more go way of organizing a Golang application.
+In Go, we organize code by their functional responsibilities.
 
 ### Notifications
 
@@ -201,6 +208,10 @@ You can also use docker-compose for running tests.
 ```bash
 docker-compose -f docker-compose-test.yml -p faceit-backend-tests up
 ```
+
+## Possible Improvements
+- [ ] Creating a retry queue mechanism in case of errors for notifications
+- [ ] We cannot say that the app is scalable at all, because the subscribers are handled in the memory of the app. To scale the app, an in memory database like Redis might be used to store the subscribers of topics.
 
 ## Documentation
 
