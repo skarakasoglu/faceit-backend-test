@@ -161,7 +161,7 @@ docker-compose up
 
 You can run tests in two ways. One of them is using make and the other one is using docker.
 
-###Make
+### Make
 
 The below command run your tests on the local:
 
@@ -175,7 +175,7 @@ If you'd like to see the coverage in detail. You can run the make command below.
 make coverage
 ```
 
-###Docker
+### Docker
 
 You can also run tests on a docker container by using the command below.
 
