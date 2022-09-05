@@ -23,7 +23,7 @@ import (
 	"syscall"
 	"time"
 
-	_ "faceit-backend-test/docs"
+	docs "faceit-backend-test/docs"
 )
 
 var (
@@ -43,6 +43,8 @@ func main() {
 
 	initConfig()
 	initLogger()
+	docs.SwaggerInfo.Host = cfg.Server.HttpAddress
+
 	db := initDb()
 	routes := initRoutes(db)
 
@@ -181,7 +183,7 @@ func initDb() *sqlx.DB {
 
 	for db == nil || err != nil {
 		reconnectTrialCount++
-		db, err = sqlx.Connect("postgres", cfg.Postgres.Uri)
+		db, err = sqlx.Connect("postgres", fmt.Sprintf("postgresql://%v:%v@%v/%v?sslmode=disable", cfg.Postgres.User, cfg.Postgres.Password, cfg.Postgres.Host, cfg.Postgres.Db))
 		if err != nil {
 			logrus.WithFields(logrus.Fields{
 				"error":      err.Error(),

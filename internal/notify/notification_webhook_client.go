@@ -97,7 +97,7 @@ func (n *notificationWebhookClient) sendNotification(payload notificationPayload
 	// message id can be used by the subscriber to be able to
 	// handle a possible duplicate notifications from Notification-Message-Id header in the request.
 	req.Header.Set("Notification-Message-Id", payload.messageId)
-	req.Header.Set("Notification-Message-Timestamp", fmt.Sprintf("%v", payload.timestamp.Unix()))
+	req.Header.Set("Notification-Message-Timestamp", payload.timestamp.Format(time.RFC3339Nano))
 	req.Header.Set("Notification-Message-Type", notificationMessageTypeNotification)
 	req.Header.Set("Content-Type", "application/json")
 

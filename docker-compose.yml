@@ -1,6 +1,7 @@
 version: "3.7"
 services:
   database:
+    container_name: FaceitBackendDB
     image: postgres:14.5-bullseye
     restart: always
     env_file:
@@ -11,7 +12,8 @@ services:
       test: pg_isready -U $POSTGRES_USER -d $POSTGRES_DB
     volumes:
       - ./scripts/init_db.sql:/docker-entrypoint-initdb.d/init.sql
-  faceit-backend-test:
+  faceit-backend-app:
+    container_name: FaceitBackendApp
     build:
       context: .
       dockerfile: Dockerfile

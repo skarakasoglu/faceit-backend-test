@@ -20,7 +20,10 @@ type LogConfig struct {
 }
 
 type PostgresConfig struct {
-	Uri                string `split_words:"true" required:"true"`
+	Host               string `split_words:"true" required:"true"`
+	User               string `split_words:"true"`
+	Password           string `split_words:"true"`
+	Db                 string `split_words:"true"`
 	ReconnectTimeout   int    `split_words:"true" default:"30"`
 	MaxReconnectTrials int    `split_words:"true" default:"10"`
 	MaxIdleConnections int    `split_words:"true" default:"5"`

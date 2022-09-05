@@ -191,7 +191,7 @@ func TestRepository_Update(t *testing.T) {
 		)
 
 		rows := sqlmock.
-			NewRows([]string{"updated_at"}).AddRow(e.UpdatedAt)
+			NewRows([]string{"created_at", "updated_at"}).AddRow(e.CreatedAt, e.UpdatedAt)
 
 		query := "UPDATE users"
 		prep := mock.ExpectPrepare(query)

@@ -14,6 +14,9 @@ build:
 	GOFLAGS="-mod=vendor"
 	CGO_ENABLED=0 go build -o faceit-backend-test ./cmd/main.go
 
+run: build
+	./faceit-backend-test
+
 check-doc-reqs:
 	$(foreach bin,$(DOC_EXECUTABLES),\
 		$(if $(shell command -v $(bin) 2> /dev/null),$(info Found `$(bin)`),$(error Please install `$(bin)`)))

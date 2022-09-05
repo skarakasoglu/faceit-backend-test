@@ -1,0 +1,9 @@
+version: "3.7"
+services:
+  faceit-backend-tests:
+    container_name: FaceitBackendTests
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    networks:
+        - default
