@@ -26,11 +26,11 @@ func newNotificationWebhookClient(client *http.Client, sub NotificationSubscribe
 	}
 }
 
-// verifySubscription the first flow of the subscription is verifying that the callback endpoint is valid.
+// Verify the first flow of the subscription is verifying that the callback endpoint is valid.
 // this func makes a request to the callback url with a challenge value
 // the client should verify it by returning a http.StatusOK response
 // with the challenge as a plain text in the body.
-func (n *notificationWebhookClient) verifySubscription() error {
+func (n *notificationWebhookClient) Verify() error {
 	payload := verificationPayload{
 		Id:        n.subscriberDetails.Id,
 		Challenge: uuid.New().String(),
@@ -79,8 +79,8 @@ func (n *notificationWebhookClient) verifySubscription() error {
 	return nil
 }
 
-// sendNotification sends the notifications to the callback url which is provided by the subscriber
-func (n *notificationWebhookClient) sendNotification(payload notificationPayload) error {
+// Notify sends the notifications to the callback url which is provided by the subscriber
+func (n *notificationWebhookClient) Notify(payload notificationPayload) error {
 	buf, err := json.Marshal(payload)
 	if err != nil {
 		return err
@@ -118,6 +118,10 @@ func (n *notificationWebhookClient) sendNotification(payload notificationPayload
 	}
 
 	return nil
+}
+
+func (n *notificationWebhookClient) Subscriber() NotificationSubscriber {
+	return n.subscriberDetails
 }
 
 // createSignature creates the payload signature hash from messageId, timestamp and the payload

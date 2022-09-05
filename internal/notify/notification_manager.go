@@ -17,7 +17,7 @@ type NotificationManager interface {
 // creates the notification handlers topic by topic
 type notificationManager struct {
 	broker                      pubsub.Broker
-	pendingVerification         chan *notificationWebhookClient
+	pendingVerification         chan NotificationWebhookClient
 	notificationWebhookHandlers map[string]*notificationWebhookHandler
 	logger                      *logrus.Logger
 }
@@ -29,7 +29,7 @@ type NotificationManagerOpts func(*notificationManager)
 func NewNotificationManager(topics []string, opts ...NotificationManagerOpts) *notificationManager {
 	n := &notificationManager{
 		notificationWebhookHandlers: map[string]*notificationWebhookHandler{},
-		pendingVerification:         make(chan *notificationWebhookClient, 100),
+		pendingVerification:         make(chan NotificationWebhookClient, 100),
 	}
 
 	for _, opt := range opts {
@@ -97,26 +97,23 @@ func (n *notificationManager) Subscribe(topic string, callback string, secret st
 // if something is pushed then sends a verification request to the callback url of the subscriber.
 func (n *notificationManager) handlePendingVerifications() {
 	for notifierClient := range n.pendingVerification {
-		err := notifierClient.verifySubscription()
+		err := notifierClient.Verify()
 		if err != nil {
 			n.logger.WithFields(logrus.Fields{
-				"id":       notifierClient.subscriberDetails.Id,
-				"topic":    notifierClient.subscriberDetails.Topic,
-				"callback": notifierClient.subscriberDetails.CallbackUrl,
-				"error":    err,
+				"error": err,
 			}).Error("cannot verify subscription")
 			continue
 		}
 
-		topic, ok := n.notificationWebhookHandlers[notifierClient.subscriberDetails.Topic]
+		topic, ok := n.notificationWebhookHandlers[notifierClient.Subscriber().Topic]
 		if !ok {
 			continue
 		}
 
 		n.logger.WithFields(logrus.Fields{
-			"id":       notifierClient.subscriberDetails.Id,
-			"topic":    notifierClient.subscriberDetails.Topic,
-			"callback": notifierClient.subscriberDetails.CallbackUrl,
+			"id":       notifierClient.Subscriber().Id,
+			"topic":    notifierClient.Subscriber().Topic,
+			"callback": notifierClient.Subscriber().CallbackUrl,
 		}).Debug("verified subscription")
 		topic.addToSubscribers(notifierClient)
 	}
