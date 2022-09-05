@@ -167,6 +167,8 @@ It causes the app run before database container, because Docker doesn't know abo
 Since the app runs before the database container, it will log an error about not being able to connect to db server, 
 but it also will try to reconnect after the timeout which is determined in POSTGRES_RECONNECT_TIMEOUT variable.
 
+**Another Note**: 1000 rows are provided to the container in the initialization script. Therefore, the DB is going to have initially 1000 rows inserted after running.
+
 ## Running Tests
 
 You can run tests in two ways. One of them is using make and the other one is using docker.
