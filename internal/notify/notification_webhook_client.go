@@ -59,18 +59,20 @@ func (n *notificationWebhookClient) Verify() error {
 		return err
 	}
 
-	if resp.StatusCode == http.StatusOK {
-		body, err := io.ReadAll(resp.Body)
-		if err != nil {
-			return err
-		}
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("invalid response status code")
+	}
 
-		challenge := string(body)
-		// if the challenge provider by the subscriber is not equal to the sent one
-		// then the subscription won't be verified.
-		if challenge != payload.Challenge {
-			return fmt.Errorf("invalid challenge provided: %v, expected: %v", challenge, payload.Challenge)
-		}
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	challenge := string(body)
+	// if the challenge provider by the subscriber is not equal to the sent one
+	// then the subscription won't be verified.
+	if challenge != payload.Challenge {
+		return fmt.Errorf("invalid challenge provided: \"%v\", expected: \"%v\"", challenge, payload.Challenge)
 	}
 
 	// after verifying that the callback url is valid

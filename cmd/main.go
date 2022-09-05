@@ -150,7 +150,7 @@ func initRoutes(db *sqlx.DB) []router.Controller {
 	)
 
 	userRepository := user.NewRepository(user.WithDb(db))
-	userService := user.NewServiceLoggingMiddleware(logger.WithField("service", "userService").Logger)(user.NewService(
+	userService := user.NewServiceLoggingMiddleware(logger)(user.NewService(
 		user.WithRepository(userRepository),
 		user.WithBroker(broker),
 	))
@@ -165,7 +165,7 @@ func initRoutes(db *sqlx.DB) []router.Controller {
 	)
 	notificationManager.Start()
 
-	subscribeService := sub.NewService(sub.WithNotificationManager(notificationManager))
+	subscribeService := sub.NewServiceLoggingMiddleware(logger)(sub.NewService(sub.WithNotificationManager(notificationManager)))
 	subscribe := sub.NewController(sub.WithService(subscribeService))
 
 	return []router.Controller{healthCheck, users, subscribe}

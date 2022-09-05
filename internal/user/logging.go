@@ -17,15 +17,16 @@ var _ Service = (*serviceLoggingMiddleware)(nil)
 
 func NewServiceLoggingMiddleware(logger *logrus.Logger) ServiceLoggingMiddleware {
 	return func(s Service) Service {
-		return serviceLoggingMiddleware{
+		return &serviceLoggingMiddleware{
 			logger: logger,
 			next:   s,
 		}
 	}
 }
 
-func (s serviceLoggingMiddleware) Create(ctx context.Context, request CreateUserRequest) (CreateUserResponse, error) {
+func (s *serviceLoggingMiddleware) Create(ctx context.Context, request CreateUserRequest) (CreateUserResponse, error) {
 	s.logger.WithFields(logrus.Fields{
+		"service":  "UserService",
 		"endpoint": "Create",
 		"request":  request,
 	}).Debug("received request")
@@ -33,6 +34,7 @@ func (s serviceLoggingMiddleware) Create(ctx context.Context, request CreateUser
 	var err error
 	defer func(start time.Time) {
 		logger := s.logger.WithFields(logrus.Fields{
+			"service":  "UserService",
 			"endpoint": "Create",
 			"took":     time.Since(start).String(),
 		})
@@ -47,8 +49,9 @@ func (s serviceLoggingMiddleware) Create(ctx context.Context, request CreateUser
 	return resp, err
 }
 
-func (s serviceLoggingMiddleware) Update(ctx context.Context, request UpdateUserRequest) (UpdateUserResponse, error) {
+func (s *serviceLoggingMiddleware) Update(ctx context.Context, request UpdateUserRequest) (UpdateUserResponse, error) {
 	s.logger.WithFields(logrus.Fields{
+		"service":  "UserService",
 		"endpoint": "Update",
 		"request":  request,
 	}).Debug("received request")
@@ -56,6 +59,7 @@ func (s serviceLoggingMiddleware) Update(ctx context.Context, request UpdateUser
 	var err error
 	defer func(start time.Time) {
 		logger := s.logger.WithFields(logrus.Fields{
+			"service":  "UserService",
 			"endpoint": "Update",
 			"took":     time.Since(start).String(),
 		})
@@ -70,8 +74,9 @@ func (s serviceLoggingMiddleware) Update(ctx context.Context, request UpdateUser
 	return resp, err
 }
 
-func (s serviceLoggingMiddleware) DeleteById(ctx context.Context, request DeleteUserByIdRequest) (DeleteUserResponse, error) {
+func (s *serviceLoggingMiddleware) DeleteById(ctx context.Context, request DeleteUserByIdRequest) (DeleteUserResponse, error) {
 	s.logger.WithFields(logrus.Fields{
+		"service":  "UserService",
 		"endpoint": "DeleteById",
 		"request":  request,
 	}).Debug("received request")
@@ -79,7 +84,8 @@ func (s serviceLoggingMiddleware) DeleteById(ctx context.Context, request Delete
 	var err error
 	defer func(start time.Time) {
 		logger := s.logger.WithFields(logrus.Fields{
-			"endpoint": "Delete",
+			"service":  "UserService",
+			"endpoint": "DeleteById",
 			"took":     time.Since(start).String(),
 		})
 		if err != nil {
@@ -93,8 +99,9 @@ func (s serviceLoggingMiddleware) DeleteById(ctx context.Context, request Delete
 	return resp, err
 }
 
-func (s serviceLoggingMiddleware) GetMany(ctx context.Context, request GetUsersManyRequest) (GetUsersManyResponse, error) {
+func (s *serviceLoggingMiddleware) GetMany(ctx context.Context, request GetUsersManyRequest) (GetUsersManyResponse, error) {
 	s.logger.WithFields(logrus.Fields{
+		"service":  "UserService",
 		"endpoint": "GetMany",
 		"request":  request,
 	}).Debug("received request")
@@ -102,6 +109,7 @@ func (s serviceLoggingMiddleware) GetMany(ctx context.Context, request GetUsersM
 	var err error
 	defer func(start time.Time) {
 		logger := s.logger.WithFields(logrus.Fields{
+			"service":  "UserService",
 			"endpoint": "GetMany",
 			"took":     time.Since(start).String(),
 		})

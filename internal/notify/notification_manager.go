@@ -70,7 +70,7 @@ func (n *notificationManager) Start() {
 func (n *notificationManager) Subscribe(topic string, callback string, secret string) (NotificationSubscriber, error) {
 	_, ok := n.notificationWebhookHandlers[topic]
 	if !ok {
-		return NotificationSubscriber{}, fmt.Errorf("topic %s not available", topic)
+		return NotificationSubscriber{}, fmt.Errorf("topic \"%s\" not available", topic)
 	}
 
 	ns := NotificationSubscriber{
@@ -100,6 +100,7 @@ func (n *notificationManager) handlePendingVerifications() {
 		err := notifierClient.Verify()
 		if err != nil {
 			n.logger.WithFields(logrus.Fields{
+				"id":    notifierClient.Subscriber().Id,
 				"error": err,
 			}).Error("cannot verify subscription")
 			continue

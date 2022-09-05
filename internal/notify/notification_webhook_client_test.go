@@ -43,7 +43,6 @@ func TestNotificationWebhookClient_Verify(t *testing.T) {
 	}
 
 	t.Run("success", func(t *testing.T) {
-
 		nc := newTestClient(func(req *http.Request) *http.Response {
 			messageType := req.Header.Get("Notification-Message-Type")
 			assert.Equal(t, notificationMessageTypeVerification, messageType)
@@ -67,6 +66,17 @@ func TestNotificationWebhookClient_Verify(t *testing.T) {
 
 		err := nc.Verify()
 		assert.NoError(t, err)
+	})
+
+	t.Run("error", func(t *testing.T) {
+		nc := newTestClient(func(req *http.Request) *http.Response {
+			return &http.Response{
+				StatusCode: http.StatusOK,
+			}
+		}, ns)
+
+		err := nc.Verify()
+		assert.Error(t, err)
 	})
 }
 
