@@ -1,6 +1,9 @@
 # faceit-backend-test
 ## Introduction
-This is a microservice that manages user operations developed in Golang.
+This is a microservice that manages user operations.
+
+## Tech Stack
+Golang, Docker, Postgresql
 
 ### Allowed Endpoints and Methods
 
@@ -54,7 +57,7 @@ Verification Payload:
 }
 ```
 
-**Example response that you should be sending the requet above**:
+**Example response that you should be sending to the request above**:
 ```text
 8e4924b6-2cfa-11ed-a261-0242ac120002
 ```
