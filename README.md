@@ -27,6 +27,8 @@ To be able to receive notifications for events, you need to call subscribe endpo
 provide a callback url and a topic name. The topic name is the topic of the event you'd like to subscribe. 
 The callback url is the endpoint that you should be serving to be able to receive the notification for that specific topic. After calling subscribe endpoint, the app sends the request to the verification queue. While processing the request in the verification queue, the callback endpoint that you've provided in the request is called with a request body.
 
+![](notification-flow.png)
+
 Verification Payload:
 
 ```http
