@@ -162,6 +162,11 @@ or
 docker-compose up
 ```
 
+**Note**: When you create the database container first time, it will take more time than the creating service container. 
+It causes the app run before database container, because Docker doesn't know about health status of a container, it only runs them in dependency order.
+Since the app runs before the database container, it will log an error about not being able to connect to db server, 
+but it also will try to reconnect after the timeout which is determined in POSTGRES_RECONNECT_TIMEOUT variable.
+
 ## Running Tests
 
 You can run tests in two ways. One of them is using make and the other one is using docker.

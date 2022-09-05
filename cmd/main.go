@@ -22,8 +22,6 @@ import (
 	"strings"
 	"syscall"
 	"time"
-
-	docs "faceit-backend-test/docs"
 )
 
 var (
@@ -35,15 +33,12 @@ var (
 // @title Faceit Backend Test
 // @version 0.1
 
-// @host localhost:8080
-
 func main() {
 	s := &Service{}
 	defer s.Shutdown()
 
 	initConfig()
 	initLogger()
-	docs.SwaggerInfo.Host = cfg.Server.HttpAddress
 
 	db := initDb()
 	routes := initRoutes(db)
