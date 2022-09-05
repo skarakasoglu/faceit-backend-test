@@ -2,7 +2,7 @@
 ## Introduction
 This is a microservice that manages user operations.
 
-##$ Tech Stack
+### Tech Stack
 Golang, Docker, Postgresql
 
 ### Allowed Endpoints and Methods
