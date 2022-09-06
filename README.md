@@ -36,6 +36,8 @@ The callback url is the endpoint that you should be serving to be able to receiv
 
 ![](notification-flow.png)
 
+**Allowed Topics**: `user.update`
+
 Verification Payload:
 
 ```http
@@ -170,7 +172,7 @@ docker-compose up
 ```
 
 **Note**: When you create the database container first time, it will take more time than the creating service container. 
-It causes the app run before database container, because Docker doesn't know about health status of a container, it only runs them in dependency order.
+It causes the app to run before database container, because Docker doesn't know about health status of a container, it only runs them in dependency order.
 Since the app runs before the database container, it will log an error about not being able to connect to db server, 
 but it also will try to reconnect after the timeout which is determined in POSTGRES_RECONNECT_TIMEOUT variable.
 
@@ -182,13 +184,13 @@ You can run tests in two ways. One of them is using make and the other one is us
 
 ### Make
 
-The below command run your tests on the local:
+The below command runs your tests on the local:
 
 ```bash
 make test
 ```
 
-If you'd like to see the coverage in detail. You can run the make command below. It will create an output file on the current directory named cover.html. You can check the code coverages in an UI way.
+If you'd like to see the coverage in detail. You can run the make command below. It will create an output file named cover.html on the current directory. You can check the code coverages in an UI way.
 
 ```bash
 make coverage
